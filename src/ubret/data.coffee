@@ -1,31 +1,24 @@
 class Data
   constructor: (data) ->
-    if typeof data is 'Array'
-      @wrappedData = Lazy(data)
+    if _.isArray(data)
+      @data = Lazy(data)
     else
-      @wrappedData = data
-
-  where: (func) ->
-    @wrappedData = @wrappedData.filter(func)
-    @
-
-  map: (func) ->
-    @wrappedData = @wrappedData.map func
-    @
-
-  field: (name, func) ->
-    @wrappedData = @wrappedData.map (i) ->
-      i[name] = func(i)
-      i
-    @
-
-  page: (number, perPage) ->
-    if typeof perPage is 'Number'
-    else
-    
+      @data = data
 
   project: (keys...) ->
-    unless keys[0] is '*'
-      @wrappedData = @wrappedData.map((i) -> Lazy(i).pick.apply(@, keys).toObject())
-    @wrappedData.toArray()
-    
+    new Data(@data.map((d) -> d.pick.apply(null, keys))).toArray()
+
+  filter: (func) ->
+    new Data(@data.filter(func))
+
+  addField: (field, func) ->
+    new Data(@data.map((d) -> d[field] = func(d)))
+
+  groupBy: (func) ->
+    new Data(@data.groupBy(func))
+
+  each: (func) ->
+    @data.each(func)
+    @data
+
+@Ubret.Data = Data
