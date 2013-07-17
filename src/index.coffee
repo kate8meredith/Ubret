@@ -9,6 +9,9 @@ Ubret.Dependencies =
   "underscore":
     symbol: "_"
     source: "vendor/underscore.js"
+  "lazy" :
+    symbol: "Lazy"
+    source: "vendor/lazy.js"
   "Backbone":
     symbol: "Backbone"
     source: "vendor/backbone.js"
@@ -25,6 +28,13 @@ Ubret.Dependencies =
     source: "vendor/fits.js"
   "Events" : 
     source: "lib/ubret/events.js"
+    deps: ["underscore"]
+  "Data" :
+    source: "lib/ubret/data.js"
+    deps: ["underscore", "lazy"]
+  "Tool" :
+    source: "lib/ubret/tool.js"
+    deps: ["Events", "Data", "d3.units", "d3"]
   "BaseTool": 
     source: "lib/ubret/base_tool.js"
     deps: ["Events", "underscore", "d3.units"] 
@@ -60,7 +70,7 @@ Ubret.Dependencies =
     deps: ["BaseTool"]
   "Table" :
     source: "lib/ubret/table.js"
-    deps: ["BaseTool", "Paginated"]
+    deps: ["Tool", "Paginated"]
   "Spectra" :
     source: "lib/ubret/spectra.js"
     deps: ["Sequential", "Graph", "Ajax"]

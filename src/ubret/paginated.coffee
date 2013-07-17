@@ -10,10 +10,10 @@ Ubret.Paginated =
     sortedData.slice(startIndex, endIndex)
 
   pages: ->
-    Math.ceil(@pageSort(@preparedData()).length / _.result(@, 'perPage'))
+    Math.ceil(@data.project('all').length / _.result(@, 'perPage'))
 
   currentPage: (page) ->
-    if _.isEmpty(@preparedData())
+    if _.isEmpty(@data.project('all'))
       @opts.currentPage = page
     else if page < 0
       @opts.currentPage = @pages() - 1
@@ -25,6 +25,7 @@ Ubret.Paginated =
       @opts.currentPage = page
 
   nextPage: ->
+    console.log @
     @settings
       currentPage: parseInt(@opts.currentPage) + 1
 

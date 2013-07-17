@@ -6,11 +6,19 @@
   <script src="http://localhost:3001/lib/index.js"></script>
   </head>
   <body>
-    <div class="table" style="height: 640px;">
+    <div id="table" style="height: 640px;">
     </div>
     <script>
-      Ubret.BaseUrl = "http://localhost:3001/";
-      Ubret.Loader(["Fql-Grammar"], function() {console.log('loaded'); window.Fql = Ubret.Fql});
+      Ubret.BaseUrl = "http://localhost:3001/"
+      Ubret.Loader(["Table"], 
+      function() {
+        console.log('loaded'); 
+        table = new Ubret.Table({
+          id: "table-1", 
+          data: [{a: 1, b: 2, c: 3, g: "hi"}, {a: 1, b: 2, c: 3, g: "hi"}, {a: 1, b: 2, c: 3, g: "hi"}], 
+          height: 640, 
+          width: 480});
+          document.getElementById('table').appendChild(table.el);})
     </script>
   </body>
 </html>

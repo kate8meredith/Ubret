@@ -5,8 +5,12 @@ class Data
     else
       @data = data
 
+  keys: ->
+    _.keys @data.first()
+
   project: (keys...) ->
-    new Data(@data.map((d) -> d.pick.apply(null, keys))).toArray()
+    return @data.toArray() if keys[0] = all
+    @data.map((d) -> d.pick.apply(null, keys)).toArray()
 
   filter: (func) ->
     new Data(@data.filter(func))
@@ -16,6 +20,9 @@ class Data
 
   groupBy: (func) ->
     new Data(@data.groupBy(func))
+
+  page: (perPage) ->
+    new Data(@data.groupBy
 
   each: (func) ->
     @data.each(func)

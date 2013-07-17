@@ -1,8 +1,9 @@
-class Table extends Ubret.BaseTool
+class Table extends Ubret.Tool
   name: 'Table'
   
   constructor: ->
     _.extend @, Ubret.Paginated
+    console.log @
     super 
 
   events:
@@ -37,7 +38,7 @@ class Table extends Ubret.BaseTool
     @thead.selectAll('th').remove()
 
     @thead.selectAll("th")
-      .data(@opts.keys)
+      .data(@data.keys())
       .enter().append("th")
         .on('click', (d, i) => @sortRow d)
         .attr('data-key', (d) -> d)
@@ -76,10 +77,7 @@ class Table extends Ubret.BaseTool
     # and table cells are 27px high.
     Math.floor((@opts.height - 90 )/ 27) 
 
-  pageSort: (data) ->
-    sorted = _.sortBy(data, (d) => d[@opts.sortColumn])
-    sorted.reverse() if @opts.sortOrder is 'bottom'
-    sorted
+  pageSort: (d) => d[@opts.sortColumn]
 
   # UI Events
   sortRow: (key) ->
