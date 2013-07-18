@@ -22,7 +22,7 @@ class Data
     new Data(@data.groupBy(func))
 
   page: (perPage) ->
-    new Data(@data.groupBy
+    new Data(@data.groupBy((d) => @data.indexOf(d) % perPage))
 
   each: (func) ->
     @data.each(func)
