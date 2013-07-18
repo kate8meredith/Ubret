@@ -15,10 +15,12 @@
         console.log('loaded'); 
         table = new Ubret.Table({
           id: "table-1", 
-          data: [{a: 1, b: 2, c: 3, g: "hi"}, {a: 1, b: 2, c: 3, g: "hi"}, {a: 1, b: 2, c: 3, g: "hi"}], 
+          data: [{a: 3, b: 2, c: 3, g: "hi"}, {a: 2, b: 2, c: 3, g: "hi"}, {a: 1, b: 2, c: 3, g: "hi"}], 
           height: 640, 
           width: 480});
-          document.getElementById('table').appendChild(table.el);})
+          document.getElementById('table').appendChild(table.el);
+          console.log(table.el);
+      });
     </script>
   </body>
 </html>

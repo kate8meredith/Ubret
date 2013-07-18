@@ -1,18 +1,31 @@
 class Tool extends Ubret.EventEmitter
   constructor: (options) ->
+    @includeMixins()
     @opts = {}
+    @selectedIds = []
+    @unitsFormatter = d3.units 'astro'
 
     @id = options.id
     @el = document.createElement('div')
     @el.id = @id 
     @d3el = d3.select(@el)
 
+    super
+    @initialize() if @initialize?
+
     @resize(options)
     @select(options.selectedIds)
     @settings(options.setttings)
     @setData(options)
 
-    super
+  includeMixins: ->
+    if _.isArray @mixin
+      _.each @mixin, @includeMixin, @
+    else
+      @includeMixin(@mixin)
+
+  includeMixin: (m) ->
+    _.extend @, m
 
   setData: ({data, filters, fields}, triggerEvent=true) ->
     @rawData = data if data?
@@ -25,9 +38,17 @@ class Tool extends Ubret.EventEmitter
       @data = @data.filter(f)
 
     _.each @fields or [], (f) ->
-      @data = @data.addField(f.field, f.func)
+      @data = @data.addField(f)
 
     @push 'data', @childData()
+
+  getData: ->
+    unless @data?
+      throw new Error("No Data")
+    else if @data.toArray?
+      @data
+    else
+      @data.project('*')
 
   select: (ids, reset=false, triggerEvent=true) ->
     if _.isArray(ids)
@@ -42,7 +63,7 @@ class Tool extends Ubret.EventEmitter
   resize: ({height, width}, triggerEvent=true) ->
     @height = height
     @width = width
-    @push 'dimensions', {height: @height, width: @width} if triggerEvent
+    @push 'resize', {height: @height, width: @width} if triggerEvent
 
   setParent: (tool=null, triggerEvent=true) ->
     @parentId = tool.id
@@ -62,7 +83,7 @@ class Tool extends Ubret.EventEmitter
     @push 'settings', settings if triggerEvent
     @
 
-  setting: (value, setting) ->
+  setting: (value, setting, triggerEvent=true) ->
     if typeof @[setting] is 'function'
       @[setting](value)
     else
@@ -70,6 +91,10 @@ class Tool extends Ubret.EventEmitter
     @push "setting:#{setting}", value if triggerEvent
 
   childData: ->
-    @data
+    @data  
+    
+  formatKey: (key) ->
+    (key.replace(/_/g, " ")).replace /(\b[a-z])/g, (char) ->
+      char.toUpperCase()
 
 Ubret.Tool = Tool

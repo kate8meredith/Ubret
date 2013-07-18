@@ -1,36 +1,25 @@
 class Table extends Ubret.Tool
   name: 'Table'
   
-  constructor: ->
-    _.extend @, Ubret.Paginated
-    console.log @
-    super 
+  mixin: Ubret.Paginated
+
+  initialize: ->
+    @table = @d3el.append('table')
 
   events:
     'next' : 'nextPage drawTable'
     'prev' : 'prevPage drawTable'
-    'setting:sortColumn' : 'sort'
-    'setting:sortOrder': 'sort'
-    'selection' : 'drawRows'
-    'height' : 'drawTable'
-    'keys' : 'drawHeader'
+    'setting:sortColumn' : 'drawTable'
+    'setting:sortOrder': 'drawTable'
+    'resize' : 'drawTable'
+    'select' : 'drawRows'
     'data' : 'drawTable'
 
-  selector: ->
-    super
-    @table = @d3el.append('table')
-    @
-
   drawTable: ->
-    return @ unless @d3el
-    @drawRows()
-    @drawPages()
-    @
-
-  sort: ->
-    return if _.isEmpty(@preparedData()) or not @table
+    return unless @data?
     @drawHeader()
     @drawRows()
+    @drawPages()
 
   # Drawing
   drawHeader: ->
@@ -38,7 +27,7 @@ class Table extends Ubret.Tool
     @thead.selectAll('th').remove()
 
     @thead.selectAll("th")
-      .data(@data.keys())
+      .data(@data.keys)
       .enter().append("th")
         .on('click', (d, i) => @sortRow d)
         .attr('data-key', (d) -> d)
@@ -47,6 +36,7 @@ class Table extends Ubret.Tool
             if d is @opts.sortColumn then @arrow() else '')
 
   drawRows: -> 
+    return unless @data?
     @tbody = @table.append('tbody') unless @tbody
     @tbody.selectAll('tr').remove()
 
@@ -55,7 +45,7 @@ class Table extends Ubret.Tool
       .enter().append('tr')
         .attr('data-id', (d) -> d.uid)
         .attr('class', (d) => 
-          if d.uid in @opts.selectedIds then 'selected' else '')
+          if d.uid in @selectedIds then 'selected' else '')
         .on('click', @selection)
     
     tr.selectAll('td')
@@ -64,18 +54,18 @@ class Table extends Ubret.Tool
         .text((d) -> return d)
 
   drawPages: ->
-    return if _.isEmpty @preparedData()
+    return unless @data?
     @p.remove() if @p
     @p = @d3el
       .append('p')
       .attr('class', 'pages')
-      .text("Page: #{parseInt(@opts.currentPage) + 1} of #{@pages()}")
+      .text("Page: #{parseInt(@opts.currentPage) + 1} of #{@pages().length}")
 
   # Pagination
   perPage: -> 
     # Assumes top margin + bottom margins = 130px,
     # and table cells are 27px high.
-    Math.floor((@opts.height - 90 )/ 27) 
+    Math.floor((@height - 90 )/ 27) 
 
   pageSort: (d) => d[@opts.sortColumn]
 
@@ -107,7 +97,7 @@ class Table extends Ubret.Tool
   # Helpers
   toArray: (data) =>
     ret = new Array
-    for key in @opts.keys
+    for key in @data.keys
       ret.push data[key]
     return ret
 

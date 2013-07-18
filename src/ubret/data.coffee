@@ -4,28 +4,64 @@ class Data
       @data = Lazy(data)
     else
       @data = data
+    @keys = @getKeys()
 
-  keys: ->
+  getKeys: ->
     _.keys @data.first()
 
+  query: ({project, where, withFields, sort, perPage}) ->
+    data = @data
+    data = data.filter(where) if filter?
+    data = data.sort(sort) if sort?
+
+    if _.isArray withFields
+      _.each(((f) -> data = data.addField(f)), @)
+    else
+      data = data.addField(withFields)
+
+    projection = data.project(project)
+    projection = projection.page(perPage) if perPage?
+    projection 
+
   project: (keys...) ->
-    return @data.toArray() if keys[0] = all
-    @data.map((d) -> d.pick.apply(null, keys)).toArray()
+    if keys[0] in ['all', '*']
+      data = @data 
+    else
+      data = @data.map((d) -> _.pick.call(null, d, keys...))
+    new Projection(data)
 
   filter: (func) ->
     new Data(@data.filter(func))
 
-  addField: (field, func) ->
+  sort: ({func, direction}) ->
+    data = @data.sort(func)
+    data = data.reverse() if direction is 'desc'
+    new Data(data)
+
+  addField: ({field, func}) ->
     new Data(@data.map((d) -> d[field] = func(d)))
 
-  groupBy: (func) ->
-    new Data(@data.groupBy(func))
+class Projection
+  constructor: (@data) ->
+    @length = @data.reduce(((x) -> x + 1), 0)
+    @keys = @getKeys()
 
-  page: (perPage) ->
-    new Data(@data.groupBy((d) => @data.indexOf(d) % perPage))
+  getKeys: ->
+    _.keys @data.first()
+
+  groupBy: (func) ->
+    @data.groupBy(func).toArray()
 
   each: (func) ->
-    @data.each(func)
+    @projection.each(func)
     @data
+
+  page: (perPage) ->
+    return @data if perPage is 1
+    new Projection(@data.groupBy((d) -> Math.floor(d / perPage))
+      .map((d) -> d[1]))
+
+  toArray: ->
+    @data.toArray()
 
 @Ubret.Data = Data

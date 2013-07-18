@@ -4,6 +4,15 @@ fs = require 'fs'
 Ubret = require './src/index'
 
 Toolsets =   
+  galaxy_zoo_starburst: [ "Spectra", 
+                          "Table",
+                          "Statistics",
+                          "Mapper",
+                          "SubjectViewer",
+                          "Scatterplot",
+                          "Histogram",
+                          "ColorMagnitudeChart"]
+
   galaxy_zoo: [ "Spectra", 
                 "Table",
                 "Statistics",
